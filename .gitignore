@@ -1,0 +1,8 @@
+dev
+
+__pycache__
+
+*.pyx
+.DS_Store
+
+adss.egg*
