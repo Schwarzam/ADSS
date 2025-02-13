@@ -7,9 +7,11 @@ import requests
 import os
 import io
 
+from requests.exceptions import Timeout
+
 sync_url = os.path.join(BASEURL, "sync")
 
-def execute_sync(query):
+def execute_sync(query, timeout=20):
     data = {
         "request": "doQuery",
         "version": "1.0",
@@ -20,7 +22,10 @@ def execute_sync(query):
     }
 
     # Make request to TAP server
-    res = requests.post(sync_url, data=data)
+    try:
+        res = requests.post(sync_url, data=data, timeout=20)
+    except Timeout:
+        raise Exception("Request to TAP server timed out, for large queries use async query")
 
     # Handle errors from TAP response
     if res.status_code != 200:
