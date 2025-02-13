@@ -4,6 +4,7 @@ import os
 
 import xml.etree.ElementTree as ET
 
+from adss.table import Table
 from adss.variables import BASEURL
 
 class TAPManager:

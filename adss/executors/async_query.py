@@ -34,7 +34,7 @@ def execute_async(query, table_upload=None, refresh_rate=5):
         "query": query,
         "format": 'csv'
     }
-    
+
     if str(type(table_upload)) != "<class 'NoneType'>":
         if 'astropy.table' in str(type(table_upload)):
             if len(table_upload) > 6000:
@@ -78,7 +78,6 @@ def execute_async(query, table_upload=None, refresh_rate=5):
                 writeto(table_upload, IObytes)
                 IObytes.seek(0)
                 
-
         else:
             return 'Table type not supported'
 
