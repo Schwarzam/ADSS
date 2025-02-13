@@ -266,12 +266,12 @@ AND 1 = CONTAINS(
         if self.constrains:
             if isinstance(self.constrains, str):
                 processed_constraint = apply_alias_to_constraint(self.constrains, "t1", self.columns)
-                constraints_t1 = " AND (" + processed_constraint + ")"
+                constraints_t1 = " (" + processed_constraint + ")"
             elif isinstance(self.constrains, list):
                 processed_constraints = []
                 for c in self.constrains:
                     processed_constraints.append(apply_alias_to_constraint(c, "t1", self.columns))
-                constraints_t1 = " AND (" + " AND ".join(processed_constraints) + ")"
+                constraints_t1 = " (" + " AND ".join(processed_constraints) + ")"
 
         if constraints_t1:
             constraints_t1 = "WHERE " + constraints_t1

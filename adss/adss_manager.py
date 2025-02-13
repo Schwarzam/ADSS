@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 from adss.table import Table
 from adss.variables import BASEURL
 
-class TAPManager:
+class ADSSManager:
     def __init__(self):
         self.tables = {}
         
