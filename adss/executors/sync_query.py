@@ -1,4 +1,5 @@
 from adss.variables import BASEURL
+from adss.utils.format_table import format_result_table
 
 from astropy.table import Table
 from xml.dom import minidom
@@ -31,6 +32,6 @@ def execute_sync(query):
                 raise Exception(f"ADQL Query Error: {error_message}")
 
     # Convert CSV response to Astropy Table
-    return Table.read(io.BytesIO(res.content), format="csv")
+    return format_result_table(Table.read(io.BytesIO(res.content), format="csv"))
 
 

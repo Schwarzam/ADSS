@@ -2,7 +2,9 @@ from astropy.io.votable import from_table, writeto
 from xml.dom import minidom
 from astropy.table import Table
 
+
 from adss.variables import BASEURL
+from adss.utils.format_table import format_result_table
 import requests
 import os
 
@@ -109,7 +111,7 @@ def execute_async(query, table_upload=None, refresh_rate=5):
 
             res = requests.get(link)
 
-            return Table.read(io.BytesIO(res.content), format="csv")
+            return format_result_table(Table.read(io.BytesIO(res.content), format="csv"))
 
         if process == 'ERROR':
             item = xmldoc.getElementsByTagName('message')[0]
