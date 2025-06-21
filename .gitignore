@@ -9,3 +9,5 @@ adss.egg*
 
 build
 dist
+
+admin.py
