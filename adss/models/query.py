@@ -6,7 +6,7 @@ from typing import Dict, Optional, Any, List
 from datetime import datetime
 import pandas as pd
 
-from ..utils import parse_datetime
+from adss.utils import parse_datetime
 
 
 @dataclass

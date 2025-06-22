@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from typing import List, Dict, Optional, Any
 from datetime import datetime
 
-from ..utils import parse_datetime
+from adss.utils import parse_datetime
 
 
 @dataclass

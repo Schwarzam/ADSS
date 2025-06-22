@@ -7,9 +7,9 @@ from typing import Dict, List, Optional, Union, Any, BinaryIO, Tuple
 import io
 import pandas as pd
 
-from ..exceptions import QueryExecutionError, ResourceNotFoundError
-from ..utils import handle_response_errors, parquet_to_dataframe
-from ..models.query import Query, QueryResult
+from adss.exceptions import QueryExecutionError, ResourceNotFoundError
+from adss.utils import handle_response_errors, parquet_to_dataframe
+from adss.models.query import Query, QueryResult
 
 
 class QueriesEndpoint:

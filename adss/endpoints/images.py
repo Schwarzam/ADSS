@@ -4,8 +4,8 @@ Image operations and management functionality for the Astronomy TAP Client.
 from typing import Dict, List, Optional, Union, Any
 import os
 
-from ..exceptions import ResourceNotFoundError
-from ..utils import handle_response_errors
+from adss.exceptions import ResourceNotFoundError
+from adss.utils import handle_response_errors
 
 
 class ImagesEndpoint:

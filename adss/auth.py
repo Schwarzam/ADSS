@@ -1,9 +1,9 @@
 import requests
 from typing import Dict, Optional, Tuple
 
-from .exceptions import AuthenticationError
-from .utils import handle_response_errors
-from .models.user import User
+from adss.exceptions import AuthenticationError
+from adss.utils import handle_response_errors
+from adss.models.user import User
 
 
 class Auth:

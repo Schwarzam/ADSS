@@ -7,8 +7,8 @@ from typing import Dict, List, Optional, Any
 from ..exceptions import (
     AuthenticationError, ResourceNotFoundError, PermissionDeniedError
 )
-from ..utils import handle_response_errors
-from ..models.metadata import Column, Table, Schema, DatabaseMetadata
+from adss.utils import handle_response_errors
+from adss.models.metadata import Column, Table, Schema, DatabaseMetadata
 
 
 class MetadataEndpoint:

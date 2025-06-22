@@ -5,16 +5,16 @@ from typing import Optional, Dict, List, Union, BinaryIO, Any
 import pandas as pd
 import urllib.parse
 
-from .auth import Auth
-from .endpoints.queries import QueriesEndpoint
-from .endpoints.users import UsersEndpoint
-from .endpoints.metadata import MetadataEndpoint
+from adss.auth import Auth
+from adss.endpoints.queries import QueriesEndpoint
+from adss.endpoints.users import UsersEndpoint
+from adss.endpoints.metadata import MetadataEndpoint
 #from .endpoints.admin import AdminEndpoint
-from .endpoints.images import ImagesEndpoint, LuptonImagesEndpoint, StampImagesEndpoint, TrilogyImagesEndpoint
-from .models.user import User, Role, SchemaPermission, TablePermission
-from .models.query import Query, QueryResult
-from .models.metadata import Column, Table, Schema, DatabaseMetadata
-from .exceptions import AuthenticationError
+from adss.endpoints.images import ImagesEndpoint, LuptonImagesEndpoint, StampImagesEndpoint, TrilogyImagesEndpoint
+from adss.models.user import User, Role, SchemaPermission, TablePermission
+from adss.models.query import Query, QueryResult
+from adss.models.metadata import Column, Table, Schema, DatabaseMetadata
+from adss.exceptions import AuthenticationError
 
 
 class ADSSClient:

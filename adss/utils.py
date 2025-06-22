@@ -8,7 +8,7 @@ import io
 from datetime import datetime
 from typing import Dict, Any, Optional, Union, List
 
-from .exceptions import (
+from adss.exceptions import (
     ADSSClientError, AuthenticationError, PermissionDeniedError,
     ResourceNotFoundError, QueryExecutionError, ServerError
 )

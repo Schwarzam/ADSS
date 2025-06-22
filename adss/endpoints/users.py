@@ -4,12 +4,12 @@ User management functionality for the Astronomy TAP Client.
 import requests
 from typing import Dict, List, Optional, Any
 
-from ..exceptions import (
+from adss.exceptions import (
     AuthenticationError, ResourceNotFoundError, PermissionDeniedError,
     ValidationError
 )
-from ..utils import handle_response_errors
-from ..models.user import User, Role
+from adss.utils import handle_response_errors
+from adss.models.user import User, Role
 
 
 class UsersEndpoint:
