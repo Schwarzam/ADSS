@@ -5,20 +5,25 @@ This package provides a comprehensive client for working with the Astronomy TAP 
 including authentication, query execution, user management, and administrative functions.
 """
 
-__version__ = "0.1.0"
+#__version__ = "0.1.0"
 
-from .client import ADSSClient
-from .exceptions import (
+from adss.client import ADSSClient
+from adss.exceptions import (
     ADSSClientError, AuthenticationError, PermissionDeniedError, 
     ResourceNotFoundError, QueryExecutionError
 )
-from .models.user import User, Role
-from .models.query import Query, QueryResult
-from .models.metadata import Schema, Table, Column
+from adss.models.user import User, Role
+from adss.models.query import Query, QueryResult
+from adss.models.metadata import Schema, Table, Column
+
+from adss.utils import (
+    handle_response_errors, parse_datetime, parquet_to_dataframe
+)
 
 __all__ = [
     'ADSSClient',
     'ADSSClientError', 'AuthenticationError', 'PermissionDeniedError',
     'ResourceNotFoundError', 'QueryExecutionError',
-    'User', 'Role', 'Query', 'QueryResult', 'Schema', 'Table', 'Column'
+    'User', 'Role', 'Query', 'QueryResult', 'Schema', 'Table', 'Column',
+    'handle_response_errors', 'parse_datetime', 'parquet_to_dataframe'
 ]

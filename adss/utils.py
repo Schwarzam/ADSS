@@ -13,7 +13,6 @@ from adss.exceptions import (
     ResourceNotFoundError, QueryExecutionError, ServerError
 )
 
-
 def handle_response_errors(response):
     """Handles HTTP response errors and raises appropriate exceptions."""
     if 200 <= response.status_code < 300:

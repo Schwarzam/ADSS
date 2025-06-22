@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
      name='adss',
-     version='1.2',
+     version='1.23',
      packages = setuptools.find_packages(),
      author="Gustavo Schwarz",
      author_email="gustavo.b.schwarz@gmail.com",
