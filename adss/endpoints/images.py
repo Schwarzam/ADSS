@@ -405,7 +405,7 @@ class LuptonImagesEndpoint:
                                   pattern: Optional[str] = None,
                                   output_path: Optional[str] = None,
                                   **kwargs) -> Union[bytes, str]:
-        url = f"{self.base_url}/adss/v1/images/lupton_images/collections/{collection_id}/rgb_by_coordinates"
+        url = f"{self.base_url}/adss/v1/images/collections/{collection_id}/rgb_by_coordinates"
         try:
             headers = self.auth_manager._get_auth_headers()
         except:
@@ -454,7 +454,7 @@ class LuptonImagesEndpoint:
                              pattern: Optional[str] = None,
                              output_path: Optional[str] = None,
                              **kwargs) -> Union[bytes, str]:
-        url = f"{self.base_url}/adss/v1/images/lupton_images/collections/{collection_id}/rgb_by_object"
+        url = f"{self.base_url}/adss/v1/images/collections/{collection_id}/rgb_by_object"
         try:
             headers = self.auth_manager._get_auth_headers()
         except:
@@ -679,7 +679,7 @@ class StampImagesEndpoint:
                                pattern: Optional[str] = None,
                                output_path: Optional[str] = None,
                                **kwargs) -> Union[bytes, str]:
-        url = f"{self.base_url}/adss/v1/images/stamp_images/collections/{collection_id}/stamp_by_object"
+        url = f"{self.base_url}/adss/v1/images/collections/{collection_id}/stamp_by_object"
         try:
             headers = self.auth_manager._get_auth_headers()
         except:
