@@ -107,7 +107,7 @@ class QueriesEndpoint:
             query_obj = Query(
                 id="sync_query",  # Synchronous queries don't have an ID
                 query_text=query,
-                status="COMPLETED",
+                status="completed",
                 created_at=pd.Timestamp.now(),
                 mode=mode,
                 completed_at=pd.Timestamp.now(),

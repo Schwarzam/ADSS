@@ -200,17 +200,12 @@ class ImagesEndpoint:
             raise ResourceNotFoundError(f"Failed to perform cone search: {e}")
 
     def download_file(self, file_id: int, output_path: Optional[str] = None, **kwargs) -> Union[bytes, str]:
-        url = f"{self.base_url}/adss/v1/images/files/{file_id}/download"
-        try:
-            headers = self.auth_manager._get_auth_headers()
-        except:
-            headers = {"Accept": "application/octet-stream"}
+        url = f"{self.base_url}/adss/v1/images/files/{file_id}/download?token={self.auth_manager.token}"
 
         try:
             resp = self.auth_manager.request(
                 method="GET",
                 url=url,
-                headers=headers,
                 stream=True,
                 auth_required=False,
                 **kwargs

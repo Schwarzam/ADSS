@@ -69,27 +69,27 @@ class Query:
     @property
     def is_complete(self) -> bool:
         """Check if the query has completed (successfully or with error)."""
-        return self.status in ['COMPLETED', 'ERROR']
+        return self.status in ['completed', 'failed']
     
     @property
     def is_running(self) -> bool:
         """Check if the query is currently running."""
-        return self.status == 'RUNNING'
+        return self.status == 'running'
     
     @property
     def is_queued(self) -> bool:
         """Check if the query is queued."""
-        return self.status == 'QUEUED'
+        return self.status == 'queued'
     
     @property
     def is_successful(self) -> bool:
         """Check if the query completed successfully."""
-        return self.status == 'COMPLETED'
+        return self.status == 'completed'
     
     @property
     def is_failed(self) -> bool:
         """Check if the query failed."""
-        return self.status == 'ERROR'
+        return self.status == 'failed'
 
 
 @dataclass
