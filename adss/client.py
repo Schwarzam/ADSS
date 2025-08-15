@@ -60,6 +60,13 @@ class ADSSClient:
         self.stamp_images = StampImagesEndpoint(self.base_url, self.auth)
         self.trilogy_images = TrilogyImagesEndpoint(self.base_url, self.auth)
         
+        if not username:
+            username = input("Username: ").strip()
+        if not password:
+            # hashed password input for security
+            import getpass
+            password = getpass.getpass("Password: ").strip()
+        
         # Authenticate if credentials provided
         if username and password:
             self.login(username, password, **kwargs)
