@@ -319,7 +319,7 @@ class LuptonImagesEndpoint:
             if output_path:
                 with open(output_path, 'wb') as f:
                     f.write(resp.content)
-                return output_path
+                return resp.content
             return resp.content
 
         except Exception as e:
@@ -392,7 +392,7 @@ class LuptonImagesEndpoint:
             if output_path:
                 with open(output_path, 'wb') as f:
                     f.write(resp.content)
-                return output_path
+                return resp.content
             return resp.content
 
         except Exception as e:
@@ -439,7 +439,7 @@ class LuptonImagesEndpoint:
             if output_path:
                 with open(output_path, 'wb') as f:
                     f.write(resp.content)
-                return output_path
+                return resp.content
             return resp.content
 
         except Exception as e:
@@ -494,7 +494,7 @@ class LuptonImagesEndpoint:
             if output_path:
                 with open(output_path, 'wb') as f:
                     f.write(resp.content)
-                return output_path
+                return resp.content
             return resp.content
 
         except Exception as e:
@@ -550,7 +550,7 @@ class StampImagesEndpoint:
             if output_path:
                 with open(output_path, 'wb') as f:
                     f.write(resp.content)
-                return output_path
+                return resp.content
             return resp.content
 
         except Exception as e:
@@ -615,7 +615,7 @@ class StampImagesEndpoint:
             if output_path:
                 with open(output_path, 'wb') as f:
                     f.write(resp.content)
-                return output_path
+                return resp.content
             return resp.content
 
         except Exception as e:
@@ -665,7 +665,7 @@ class StampImagesEndpoint:
             if output_path:
                 with open(output_path, 'wb') as f:
                     f.write(resp.content)
-                return output_path
+                return resp.content
             return resp.content
 
         except Exception as e:
@@ -717,7 +717,7 @@ class StampImagesEndpoint:
             if output_path:
                 with open(output_path, 'wb') as f:
                     f.write(resp.content)
-                return output_path
+                return resp.content
             return resp.content
 
         except Exception as e:
@@ -781,7 +781,7 @@ class TrilogyImagesEndpoint:
             if output_path:
                 with open(output_path, 'wb') as f:
                     f.write(resp.content)
-                return output_path
+                return resp.content
             return resp.content
 
         except Exception as e:
@@ -886,7 +886,7 @@ class TrilogyImagesEndpoint:
             if output_path:
                 with open(output_path, 'wb') as f:
                     f.write(resp.content)
-                return output_path
+                return resp.content
             return resp.content
 
         except Exception as e:
