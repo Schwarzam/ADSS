@@ -515,7 +515,7 @@ class StampImagesEndpoint:
                      zmin: Optional[float] = None, zmax: Optional[float] = None,
                      output_path: Optional[str] = None,
                      **kwargs) -> Union[bytes, str]:
-        url = f"{self.base_url}/adss/v1/images/stamp_images/files/{file_id}/stamp"
+        url = f"{self.base_url}/adss/v1/images/collections/{file_id}/stamp"
         try:
             headers = self.auth_manager._get_auth_headers()
         except:
