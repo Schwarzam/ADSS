@@ -4,12 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "adss"
-version = "1.28"
+version = "1.29"
 description = "Astronomical Data Smart System"
 readme = "README.md"
 authors = [{ name = "Gustavo Schwarz", email = "gustavo.b.schwarz@gmail.com" }]
 requires-python = ">=3.8"
 dependencies = [
+  "pyarrow",
   "requests",
   "astropy"
 ]
