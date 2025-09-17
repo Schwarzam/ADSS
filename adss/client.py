@@ -206,6 +206,7 @@ class ADSSClient:
                       file: Optional[Union[str, BinaryIO]] = None,
                       table_name: Optional[str] = None,
                       timeout: Optional[int] = None,
+                      verbose: bool = False,
                       **kwargs) -> QueryResult:
         """
         Execute a query asynchronously and wait for the results.
@@ -221,7 +222,7 @@ class ADSSClient:
         Returns:
             QueryResult object containing the query data and metadata
         """
-        return self.queries.execute_and_wait(query_text, mode, file, table_name, timeout, **kwargs)
+        return self.queries.execute_and_wait(query_text, mode, file, table_name, timeout, verbose, **kwargs)
     
     def get_query_history(self, limit: int = 50, **kwargs) -> List[Query]:
         """

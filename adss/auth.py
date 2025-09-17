@@ -5,6 +5,7 @@ from adss.exceptions import AuthenticationError
 from adss.utils import handle_response_errors
 from adss.models.user import User
 
+import os
 
 class Auth:
     """
@@ -119,3 +120,43 @@ class Auth:
     def refresh_user_info(self, **kwargs) -> User:
         self.current_user = self._get_current_user(**kwargs)
         return self.current_user
+    
+    def download(
+        self,
+        method: str,
+        url: str,
+        headers: Optional[Dict[str, str]] = None,
+        auth_required: bool = False,
+        **kwargs
+    ) -> requests.Response:
+        """
+        Like request(), but always streams the body.
+        Caller can iterate over response.iter_content() or
+        call response.raw.read() for large files.
+
+        Signature is identical to request(), so you can just
+        swap `request` -> `download` in call sites.
+        """
+        if auth_required and not self.is_authenticated():
+            raise AuthenticationError("Authentication required for this request")
+
+        # Prepend base_url if needed
+        if not url.startswith(('http://', 'https://')):
+            url = f"{self.base_url}/{url.lstrip('/')}"
+
+        # Merge headers
+        final_headers = self._get_auth_headers()
+        if headers:
+            final_headers.update(headers)
+
+        # Apply verify_ssl unless overridden
+        if 'verify' not in kwargs:
+            kwargs['verify'] = self.verify_ssl
+
+        # Force streaming
+        kwargs['stream'] = True
+
+        resp = requests.request(method, url, headers=final_headers, **kwargs)
+        handle_response_errors(resp)  # fail fast on HTTP errors
+
+        return resp

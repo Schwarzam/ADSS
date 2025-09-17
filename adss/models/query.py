@@ -69,7 +69,7 @@ class Query:
     @property
     def is_complete(self) -> bool:
         """Check if the query has completed (successfully or with error)."""
-        return self.status in ['completed', 'failed']
+        return self.status in ['completed', 'failed', 'cancelled']
     
     @property
     def is_running(self) -> bool:

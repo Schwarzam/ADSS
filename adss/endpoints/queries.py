@@ -237,7 +237,7 @@ class QueriesEndpoint:
         except Exception as e:
             raise QueryExecutionError(f"Failed to get query status: {str(e)}")
     
-    def get_results(self, query_id: str, **kwargs) -> QueryResult:
+    def get_results(self, query_id: str, verbose: bool = False, **kwargs) -> QueryResult:
         """
         Get the results of a completed asynchronous query.
         
@@ -269,12 +269,14 @@ class QueriesEndpoint:
         
         # Get the results
         try:
-            response = self.auth_manager.request(
+            response = self.auth_manager.download(
                 method="GET",
                 url=f"/adss/async/{query_id}/results",
                 auth_required=True,
                 **kwargs
             )
+            if verbose:
+                print('Results fetched.')
             handle_response_errors(response)
             
             # Parse Parquet data
@@ -350,10 +352,8 @@ class QueriesEndpoint:
             QueryExecutionError: If the query fails
         """
         start_time = time.time()
-        
         while True:
             query = self.get_status(query_id, **kwargs)
-            
             if query.is_complete:
                 return query
             
@@ -368,6 +368,7 @@ class QueriesEndpoint:
                         file: Optional[Union[str, BinaryIO]] = None,
                         table_name: Optional[str] = None,
                         timeout: Optional[int] = None,
+                        verbose: bool = False,
                         poll_interval: int = 2,
                         **kwargs) -> QueryResult:
         """
@@ -390,9 +391,13 @@ class QueriesEndpoint:
             TimeoutError: If the query doesn't complete within the timeout
         """
         # Start async query
+        if verbose:
+            print('Starting asynchronous query...')
         query_obj = self.execute_async(query, mode, file, table_name, **kwargs)
         
         # Wait for completion
+        if verbose:
+            print(f'Waiting for query {query_obj.id} to complete...')
         completed_query = self.wait_for_completion(query_obj.id, timeout, poll_interval, **kwargs)
         
         if completed_query.is_failed:
@@ -402,7 +407,9 @@ class QueriesEndpoint:
             )
         
         # Get results
-        return self.get_results(completed_query.id, **kwargs)
+        if verbose:
+            print('Fetching results...')
+        return self.get_results(completed_query.id, verbose, **kwargs)
     
     def get_history(self, limit: int = 50, **kwargs) -> List[Query]:
         """
