@@ -58,68 +58,6 @@ class ImagesEndpoint:
         except Exception as e:
             raise ResourceNotFoundError(f"Failed to get image collection {collection_id}: {e}")
 
-    def create_collection(self, name: str, base_path: str, description: Optional[str] = None, **kwargs) -> Dict[str, Any]:
-        url = f"{self.base_url}/adss/v1/images/collections/"
-        headers = self.auth_manager._get_auth_headers()
-        payload = {"name": name, "base_path": base_path}
-        if description:
-            payload["description"] = description
-
-        try:
-            resp = self.auth_manager.request(
-                method="POST",
-                url=url,
-                headers=headers,
-                json=payload,
-                auth_required=True,
-                **kwargs
-            )
-            handle_response_errors(resp)
-            return resp.json()
-        except Exception as e:
-            raise ResourceNotFoundError(f"Failed to create image collection: {e}")
-
-    def update_collection(self, collection_id: int, name: Optional[str] = None,
-                          description: Optional[str] = None, **kwargs) -> Dict[str, Any]:
-        url = f"{self.base_url}/adss/v1/images/collections/{collection_id}"
-        headers = self.auth_manager._get_auth_headers()
-        payload: Dict[str, Any] = {}
-        if name:
-            payload["name"] = name
-        if description is not None:
-            payload["description"] = description
-
-        try:
-            resp = self.auth_manager.request(
-                method="PUT",
-                url=url,
-                headers=headers,
-                json=payload,
-                auth_required=True,
-                **kwargs
-            )
-            handle_response_errors(resp)
-            return resp.json()
-        except Exception as e:
-            raise ResourceNotFoundError(f"Failed to update collection {collection_id}: {e}")
-
-    def delete_collection(self, collection_id: int, **kwargs) -> bool:
-        url = f"{self.base_url}/adss/v1/images/collections/{collection_id}"
-        headers = self.auth_manager._get_auth_headers()
-
-        try:
-            resp = self.auth_manager.request(
-                method="DELETE",
-                url=url,
-                headers=headers,
-                auth_required=True,
-                **kwargs
-            )
-            handle_response_errors(resp)
-            return True
-        except Exception as e:
-            raise ResourceNotFoundError(f"Failed to delete collection {collection_id}: {e}")
-
     def list_files(self,
                    collection_id: int,
                    skip: int = 0,
@@ -203,7 +141,7 @@ class ImagesEndpoint:
         url = f"{self.base_url}/adss/v1/images/files/{file_id}/download?token={self.auth_manager.token}"
 
         try:
-            resp = self.auth_manager.request(
+            resp = self.auth_manager.download(
                 method="GET",
                 url=url,
                 stream=True,
@@ -225,42 +163,6 @@ class ImagesEndpoint:
             return resp.content
         except Exception as e:
             raise ResourceNotFoundError(f"Failed to download image file {file_id}: {e}")
-
-    def scan_directory(self, collection_id: int, rescan_existing: bool = False, **kwargs) -> Dict[str, Any]:
-        url = f"{self.base_url}/adss/v1/images/collections/{collection_id}/scan"
-        headers = self.auth_manager._get_auth_headers()
-        payload = {"rescan_existing": rescan_existing}
-
-        try:
-            resp = self.auth_manager.request(
-                method="POST",
-                url=url,
-                headers=headers,
-                json=payload,
-                auth_required=True,
-                **kwargs
-            )
-            handle_response_errors(resp)
-            return resp.json()
-        except Exception as e:
-            raise ResourceNotFoundError(f"Failed to scan directory: {e}")
-
-    def get_scan_status(self, job_id: str, **kwargs) -> Dict[str, Any]:
-        url = f"{self.base_url}/adss/v1/images/scan-jobs/{job_id}"
-        headers = self.auth_manager._get_auth_headers()
-
-        try:
-            resp = self.auth_manager.request(
-                method="GET",
-                url=url,
-                headers=headers,
-                auth_required=False,
-                **kwargs
-            )
-            handle_response_errors(resp)
-            return resp.json()
-        except Exception as e:
-            raise ResourceNotFoundError(f"Failed to get scan job status: {e}")
 
 
 class LuptonImagesEndpoint:
@@ -301,7 +203,7 @@ class LuptonImagesEndpoint:
             payload["size"] = size
 
         try:
-            resp = self.auth_manager.request(
+            resp = self.auth_manager.download(
                 method="POST",
                 url=url,
                 headers=headers,
@@ -374,7 +276,7 @@ class LuptonImagesEndpoint:
             payload["size"] = size
 
         try:
-            resp = self.auth_manager.request(
+            resp = self.auth_manager.download(
                 method="POST",
                 url=url,
                 headers=headers,
@@ -421,7 +323,7 @@ class LuptonImagesEndpoint:
             payload["pattern"] = pattern
 
         try:
-            resp = self.auth_manager.request(
+            resp = self.auth_manager.download(
                 method="POST",
                 url=url,
                 headers=headers,
@@ -476,7 +378,7 @@ class LuptonImagesEndpoint:
             payload["pattern"] = pattern
 
         try:
-            resp = self.auth_manager.request(
+            resp = self.auth_manager.download(
                 method="POST",
                 url=url,
                 headers=headers,
@@ -531,7 +433,7 @@ class StampImagesEndpoint:
             payload["zmax"] = zmax
 
         try:
-            resp = self.auth_manager.request(
+            resp = self.auth_manager.download(
                 method="POST",
                 url=url,
                 headers=headers,
@@ -596,7 +498,7 @@ class StampImagesEndpoint:
             payload["zmax"] = zmax
 
         try:
-            resp = self.auth_manager.request(
+            resp = self.auth_manager.download(
                 method="POST",
                 url=url,
                 headers=headers,
@@ -646,7 +548,7 @@ class StampImagesEndpoint:
             payload["pattern"] = pattern
 
         try:
-            resp = self.auth_manager.request(
+            resp = self.auth_manager.download(
                 method="POST",
                 url=url,
                 headers=headers,
@@ -698,7 +600,7 @@ class StampImagesEndpoint:
             payload["pattern"] = pattern
 
         try:
-            resp = self.auth_manager.request(
+            resp = self.auth_manager.download(
                 method="POST",
                 url=url,
                 headers=headers,
@@ -763,7 +665,7 @@ class TrilogyImagesEndpoint:
             payload["size"] = size
 
         try:
-            resp = self.auth_manager.request(
+            resp = self.auth_manager.download(
                 method="POST",
                 url=url,
                 headers=headers,
@@ -812,7 +714,7 @@ class TrilogyImagesEndpoint:
             payload["pattern"] = pattern
 
         try:
-            resp = self.auth_manager.request(
+            resp = self.auth_manager.download(
                 method="POST",
                 url=url,
                 headers=headers,
@@ -868,7 +770,7 @@ class TrilogyImagesEndpoint:
             payload["pattern"] = pattern
 
         try:
-            resp = self.auth_manager.request(
+            resp = self.auth_manager.download(
                 method="POST",
                 url=url,
                 headers=headers,

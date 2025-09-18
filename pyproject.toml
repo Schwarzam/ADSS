@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "adss"
-version = "1.29"
+version = "1.30"
 description = "Astronomical Data Smart System"
 readme = "README.md"
 authors = [{ name = "Gustavo Schwarz", email = "gustavo.b.schwarz@gmail.com" }]
