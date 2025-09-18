@@ -450,7 +450,7 @@ class ADSSClient:
     
     # === Image methods ===
     
-    def get_image_collections(self, skip: int = 0, limit: int = 100, **kwargs) -> List[Dict[str, Any]]:
+    def get_collections(self, skip: int = 0, limit: int = 100, **kwargs) -> List[Dict[str, Any]]:
         """
         Get a list of accessible image collections.
         
@@ -464,7 +464,7 @@ class ADSSClient:
         """
         return self.images.get_collections(skip, limit, **kwargs)
     
-    def get_image_collection(self, collection_id: int, **kwargs) -> Dict[str, Any]:
+    def get_collection(self, collection_id: int, **kwargs) -> Dict[str, Any]:
         """
         Get a specific image collection by ID.
         
@@ -477,7 +477,7 @@ class ADSSClient:
         """
         return self.images.get_collection(collection_id, **kwargs)
     
-    def list_image_files(self, collection_id: int, skip: int = 0, limit: int = 100, 
+    def list_files(self, collection_id: int, skip: int = 0, limit: int = 100, 
                         filter_name: Optional[str] = None, filter_str: Optional[str] = None,
                         object_name: Optional[str] = None, **kwargs) -> List[Dict[str, Any]]:
         """
