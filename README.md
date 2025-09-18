@@ -140,3 +140,170 @@ query = cl.query_and_wait(
     table_name="my_table",
 )
 
+### Images - File Collections
+
+ADSS also supports downloading images, cutouts, colored images. These are handled as Collections. You can list the available file collections in the database metadata:
+
+```python
+cl.get_image_collections()
+```
+
+```
+[
+{
+    'name': 'splus dr4',
+    'path': '/dados/splus',
+    'description': 'splus dr4 collection',
+    'id': 1,
+    'created_at': '2025-04-22T15:27:36.698058',
+    'updated_at': '2025-07-31T23:27:51.497554',
+    'last_scanned': '2025-05-08T20:28:54.420350',
+    'patterns': {'': 'swp.', 'weight': 'weight'}
+}
+]
+```
+
+And then to list the files in a collection:
+
+```python
+cl.list_files(1) ## pass the collection ID
+```
+
+```
+[
+{
+    'filename': 'SPLUS-s17s23_F515_swpweight.fz',
+    'full_path': '/dados/splus/SPLUS-s17s23 SPLUS-s17s23_F515_swpweight.fz',
+    'file_type': 'fz',
+    'ra_center': 316.45153076969416,
+    'dec_center': -21.580560694390957,
+    'width': 11000,
+    'height': 11000,
+    'pixel_scale': 0.55000000000008,
+    'hdus': 2,
+    'data_hdu': 1,
+    'object_name': 'SPLUS-s17s23',
+    'filter': 'F515',
+    'instrument': 'T80Cam',
+    'telescope': 'T80',
+    'date_obs': None,
+    'file_size': 51353280,
+    'id': 28,
+    'collection_id': 1,
+    'created_at': '2025-04-22T15:35:05.487208',
+    'updated_at': '2025-05-08T19:53:09.541437'},
+},...]
+```
+
+You can then download a file by its filename:
+
+```python
+file_bytes = cl.download_file(
+    file_id=28,
+    output_path=None
+)
+```
+
+Then handle the bytes. Example:
+
+```python
+# if a fits you may open like 
+import io
+from astropy.io import fits
+
+hdul = fits.open(io.BytesIO(file_bytes))
+
+# or a image 
+from PIL import Image
+import matplotlib.pyplot as plt
+
+image = Image.open(io.BytesIO(file_bytes))
+plt.imshow(image)
+```
+
+### Image Tools
+
+Now notice that (**if**) the image collection has some wcs parameters as `ra_center`, `dec_center`, `pixel_scale`. This allows us to do some image cutouts and colored images in real time. Example:
+
+```python
+cutout_bytes = cl.create_stamp_by_coordinates(
+    collection_id = 1, 
+    ra = 0.1, 
+    dec = 0.1, 
+    size = 300, 
+    filter = "R", 
+    size_unit="pixels", 
+    format = "fits", 
+    pattern="swp."
+)
+
+hdul = fits.open(BytesIO(cutout_bytes))
+```
+
+or if the image collection has object_name info you may filter by it, forcing the cutout from that object:
+
+```python
+cutout_bytes = cl.stamp_images.create_stamp_by_object(
+    collection_id=1, 
+    object_name="STRIPE82-0002", 
+    size=300, 
+    ra=0.1,
+    dec=0.1,
+    filter_name="R", 
+    size_unit="pixels", 
+    format="fits"
+)
+cutout = fits.open(BytesIO(cutout_bytes))
+```
+
+or just by file_id, this will force the cutout from that specific file:
+
+```python
+cl.stamp_images.create_stamp(
+    file_id=28,
+    size=300,
+    ra=0.1,
+    dec=0.1,
+    size_unit="pixels", 
+    format="fits"
+)
+```
+
+### Colored images 
+
+Colored images API is very similar to the cutouts. You just need to provide a list of filters and the output format (png or jpg). Example with lupton et al. (2004) algorithm:
+
+```python
+im_bytes = cl.create_rgb_image_by_coordinates(
+    collection_id=1,
+    ra=0.1,
+    dec=0.1,
+    size=300,
+    size_unit="pixels",
+    r_filter="I",
+    g_filter="R",
+    b_filter="G",
+)
+
+im = Image.open(BytesIO(im_bytes))
+im.show()
+```
+
+Or trilogy algorithm:
+
+```python
+im_bytes = cl.trilogy_images.create_trilogy_rgb_by_coordinates(
+    collection_id=1,
+    ra=0.1,
+    dec=0.1,
+    size=300,
+    size_unit="pixels",
+    r_filters=["I", "R", "Z", "F861", "G"],
+    g_filters=["F660"],
+    b_filters=["U", "F378", "F395", "F410", "F430", "F515"],
+    satpercent=0.15,
+)
+
+im = Image.open(BytesIO(im_bytes))
+im.show()
+```
