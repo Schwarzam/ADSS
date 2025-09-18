@@ -1,3 +1,8 @@
+### 1.32
+
+Renamed 
+
+download_image() -> download_file()
 
 ### 1.31
 

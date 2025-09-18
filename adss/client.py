@@ -516,7 +516,7 @@ class ADSSClient:
         """
         return self.images.cone_search(collection_id, ra, dec, radius, filter_name, limit, **kwargs)
     
-    def download_image(self, file_id: int, output_path: Optional[str] = None, **kwargs) -> Union[bytes, str]:
+    def download_file(self, file_id: int, output_path: Optional[str] = None, **kwargs) -> Union[bytes, str]:
         """
         Download an image file.
         
