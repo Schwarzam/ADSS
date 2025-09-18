@@ -90,6 +90,19 @@ class Query:
     def is_failed(self) -> bool:
         """Check if the query failed."""
         return self.status == 'failed'
+    
+    def report(self) -> None:
+        """Print a summary of the query."""
+        print(f"Query ID: {self.id}")
+        print(f"Status: {self.status}")
+        if self.completed_at:
+            print(f"Completed At: {self.completed_at}")
+        if self.execution_time_ms is not None:
+            print(f"Execution Time (ms): {self.execution_time_ms}")
+        if self.row_count is not None:
+            print(f"Row Count: {self.row_count}")
+        if self.error:
+            print(f"Error: {self.error}")
 
 
 @dataclass
