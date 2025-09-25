@@ -11,6 +11,7 @@ authors = [{ name = "Gustavo Schwarz", email = "gustavo.b.schwarz@gmail.com" }]
 requires-python = ">=3.8"
 dependencies = [
   "pyarrow",
+  "httpx",
   "requests",
   "astropy"
 ]

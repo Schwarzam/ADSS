@@ -19,7 +19,7 @@ def handle_response_errors(response):
         return response
     
     try:
-        error_data = response.json()
+        error_data = response.read()
         error_message = error_data.get('detail', str(error_data))
     except Exception:
         error_message = response.text or f"HTTP Error {response.status_code}"

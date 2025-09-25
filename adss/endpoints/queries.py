@@ -116,7 +116,7 @@ class QueriesEndpoint:
             )
             
             # Parse Parquet data
-            df = parquet_to_dataframe(response.content)
+            df = parquet_to_dataframe(response.read())
             
             return QueryResult(
                 query=query_obj,
@@ -280,7 +280,7 @@ class QueriesEndpoint:
             handle_response_errors(response)
             
             # Parse Parquet data
-            df = parquet_to_dataframe(response.content)
+            df = parquet_to_dataframe(response.read())
             
             # Extract metadata
             expires_at = response.headers.get('X-Expires-At')

@@ -160,7 +160,7 @@ class ImagesEndpoint:
                     for chunk in resp.iter_content(8192):
                         f.write(chunk)
                 return output_path
-            return resp.content
+            return resp.read()
         except Exception as e:
             raise ResourceNotFoundError(f"Failed to download image file {file_id}: {e}")
 
@@ -220,9 +220,9 @@ class LuptonImagesEndpoint:
                 output_path = os.path.join(output_path, filename)
             if output_path:
                 with open(output_path, 'wb') as f:
-                    f.write(resp.content)
-                return resp.content
-            return resp.content
+                    f.write(resp.read())
+                return resp.read()
+            return resp.read()
 
         except Exception as e:
             raise ResourceNotFoundError(f"Failed to create RGB image: {e}")
@@ -293,9 +293,9 @@ class LuptonImagesEndpoint:
                 output_path = os.path.join(output_path, filename)
             if output_path:
                 with open(output_path, 'wb') as f:
-                    f.write(resp.content)
-                return resp.content
-            return resp.content
+                    f.write(resp.read())
+                return resp.read()
+            return resp.read()
 
         except Exception as e:
             raise ResourceNotFoundError(f"Failed to create RGB image by filenames: {e}")
@@ -340,9 +340,9 @@ class LuptonImagesEndpoint:
                 output_path = os.path.join(output_path, filename)
             if output_path:
                 with open(output_path, 'wb') as f:
-                    f.write(resp.content)
-                return resp.content
-            return resp.content
+                    f.write(resp.read())
+                return resp.read()
+            return resp.read()
 
         except Exception as e:
             raise ResourceNotFoundError(f"Failed to create RGB image by coordinates: {e}")
@@ -395,9 +395,9 @@ class LuptonImagesEndpoint:
                 output_path = os.path.join(output_path, filename)
             if output_path:
                 with open(output_path, 'wb') as f:
-                    f.write(resp.content)
-                return resp.content
-            return resp.content
+                    f.write(resp.read())
+                return resp.read()
+            return resp.read()
 
         except Exception as e:
             raise ResourceNotFoundError(f"Failed to create RGB image by object: {e}")
@@ -451,9 +451,9 @@ class StampImagesEndpoint:
                 output_path = os.path.join(output_path, filename)
             if output_path:
                 with open(output_path, 'wb') as f:
-                    f.write(resp.content)
-                return resp.content
-            return resp.content
+                    f.write(resp.read())
+                return resp.read()
+            return resp.read()
 
         except Exception as e:
             raise ResourceNotFoundError(f"Failed to create stamp from file {file_id}: {e}")
@@ -516,9 +516,9 @@ class StampImagesEndpoint:
                 output_path = os.path.join(output_path, filename)
             if output_path:
                 with open(output_path, 'wb') as f:
-                    f.write(resp.content)
-                return resp.content
-            return resp.content
+                    f.write(resp.read())
+                return resp.read()
+            return resp.read()
 
         except Exception as e:
             raise ResourceNotFoundError(f"Failed to create stamp from file {filename}: {e}")
@@ -566,9 +566,9 @@ class StampImagesEndpoint:
                 output_path = os.path.join(output_path, filename)
             if output_path:
                 with open(output_path, 'wb') as f:
-                    f.write(resp.content)
-                return resp.content
-            return resp.content
+                    f.write(resp.read())
+                return resp.read()
+            return resp.read()
 
         except Exception as e:
             raise ResourceNotFoundError(f"Failed to create stamp by coordinates: {e}")
@@ -618,9 +618,9 @@ class StampImagesEndpoint:
                 output_path = os.path.join(output_path, filename)
             if output_path:
                 with open(output_path, 'wb') as f:
-                    f.write(resp.content)
-                return resp.content
-            return resp.content
+                    f.write(resp.read())
+                return resp.read()
+            return resp.read()
 
         except Exception as e:
             raise ResourceNotFoundError(f"Failed to create stamp by object: {e}")
@@ -682,9 +682,9 @@ class TrilogyImagesEndpoint:
                 output_path = os.path.join(output_path, filename)
             if output_path:
                 with open(output_path, 'wb') as f:
-                    f.write(resp.content)
-                return resp.content
-            return resp.content
+                    f.write(resp.read())
+                return resp.read()
+            return resp.read()
 
         except Exception as e:
             raise ResourceNotFoundError(f"Failed to create Trilogy RGB image: {e}")
@@ -731,9 +731,9 @@ class TrilogyImagesEndpoint:
                 output_path = os.path.join(output_path, filename)
             if output_path:
                 with open(output_path, 'wb') as f:
-                    f.write(resp.content)
+                    f.write(resp.read())
                 return output_path
-            return resp.content
+            return resp.read()
 
         except Exception as e:
             raise ResourceNotFoundError(f"Failed to create Trilogy RGB image by coordinates: {e}")
@@ -787,9 +787,9 @@ class TrilogyImagesEndpoint:
                 output_path = os.path.join(output_path, filename)
             if output_path:
                 with open(output_path, 'wb') as f:
-                    f.write(resp.content)
-                return resp.content
-            return resp.content
+                    f.write(resp.read())
+                return resp.read()
+            return resp.read()
 
         except Exception as e:
             raise ResourceNotFoundError(f"Failed to create Trilogy RGB image by object: {e}")
