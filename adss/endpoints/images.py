@@ -7,6 +7,7 @@ import os
 from adss.exceptions import ResourceNotFoundError
 from adss.utils import handle_response_errors
 
+import re
 
 class ImagesEndpoint:
     """
