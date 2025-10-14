@@ -573,24 +573,42 @@ class StampImagesEndpoint:
         except Exception as e:
             raise ResourceNotFoundError(f"Failed to create stamp by coordinates: {e}")
 
-    def create_stamp_by_object(self,
-                               collection_id: int, object_name: str,
-                               filter_name: str, ra: float, dec: float, size: float,
-                               size_unit: str = "arcmin", format: str = "fits",
-                               zmin: Optional[float] = None, zmax: Optional[float] = None,
-                               pattern: Optional[str] = None,
-                               output_path: Optional[str] = None,
-                               **kwargs) -> Union[bytes, str]:
+    # TODO: Apply the same pattern of this functions to all download functions in this file
+    def create_stamp_by_object(
+        self,
+        collection_id: int,
+        object_name: str,
+        filter_name: str,
+        ra: float,
+        dec: float,
+        size: float,
+        size_unit: str = "arcmin",
+        format: str = "fits",
+        zmin: Optional[float] = None,
+        zmax: Optional[float] = None,
+        pattern: Optional[str] = None,
+        output_path: Optional[str] = None,
+        **kwargs
+    ) -> Union[bytes, str]:
         url = f"{self.base_url}/adss/v1/images/collections/{collection_id}/stamp_by_object"
+
+        # Build headers (auth if available), prefer identity for big binaries
         try:
             headers = self.auth_manager._get_auth_headers()
-        except:
-            headers = {"Accept": "image/png" if format == "png" else "application/fits"}
+        except Exception:
+            headers = {}
+        headers.setdefault("Accept", "image/png" if format == "png" else "application/fits")
+        headers.setdefault("Accept-Encoding", "identity")
 
+        # Payload
         payload: Dict[str, Any] = {
-            "object_name": object_name, "filter_name": filter_name,
-            "ra": ra, "dec": dec, "size": size,
-            "size_unit": size_unit, "format": format
+            "object_name": object_name,
+            "filter_name": filter_name,
+            "ra": ra,
+            "dec": dec,
+            "size": size,
+            "size_unit": size_unit,
+            "format": format,
         }
         if zmin is not None:
             payload["zmin"] = zmin
@@ -599,8 +617,9 @@ class StampImagesEndpoint:
         if pattern:
             payload["pattern"] = pattern
 
+        # Download bytes in one go (no Response object leaked to callers)
         try:
-            resp = self.auth_manager.download(
+            data = self.auth_manager.download_bytes(
                 method="POST",
                 url=url,
                 headers=headers,
@@ -608,22 +627,39 @@ class StampImagesEndpoint:
                 auth_required=False,
                 **kwargs
             )
-            handle_response_errors(resp)
-
-            cd = resp.headers.get('Content-Disposition', '')
-            ext = "fits" if format == "fits" else "png"
-            filename = cd.split('filename=')[1].strip('"') if 'filename=' in cd else f"stamp.{ext}"
-
-            if output_path and os.path.isdir(output_path):
-                output_path = os.path.join(output_path, filename)
-            if output_path:
-                with open(output_path, 'wb') as f:
-                    f.write(resp.read())
-                return resp.read()
-            return resp.read()
-
         except Exception as e:
             raise ResourceNotFoundError(f"Failed to create stamp by object: {e}")
+
+        # If no output_path => return bytes
+        if not output_path:
+            return data
+
+        # If writing to disk, synthesize a stable filename
+        ext = "fits" if format == "fits" else "png"
+
+        # sanitize components for filesystem safety
+        def _safe(s: str) -> str:
+            s = s.strip()
+            s = re.sub(r"\s+", "_", s)           # spaces -> underscores
+            s = re.sub(r"[^A-Za-z0-9._\-+]", "", s)  # drop weird chars
+            return s or "unknown"
+
+        obj = _safe(object_name)
+        filt = _safe(filter_name)
+        size_str = f"{size:g}{size_unit}"
+
+        filename = f"stamp_{obj}_{filt}_{size_str}.{ext}"
+
+        # If output_path is a dir, append filename; otherwise treat as full path
+        final_path = output_path
+        if os.path.isdir(final_path):
+            final_path = os.path.join(final_path, filename)
+
+        os.makedirs(os.path.dirname(final_path) or ".", exist_ok=True)
+        with open(final_path, "wb") as f:
+            f.write(data)
+
+        return final_path
 
 
 class TrilogyImagesEndpoint:

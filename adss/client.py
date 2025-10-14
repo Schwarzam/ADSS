@@ -294,6 +294,24 @@ class ADSSClient:
         """
         return self.metadata.get_database_metadata(**kwargs)
     
+    def pretty_print_db_metadata(self, dbmeta: Optional[DatabaseMetadata] = None) -> None:
+        """
+        Pretty print the database metadata in a hierarchical format.
+        
+        Args:
+            dbmeta: Optional DatabaseMetadata object. If not provided, fetches current metadata.
+        """
+        if dbmeta is None:
+            dbmeta = self.get_database_metadata()
+        
+        for schema in dbmeta.schemas:
+            print(f"Schema: {schema.name}")
+            for table in schema.tables:
+                print(f"  Table: {table.name}")
+                for column in table.columns:
+                    nullable = "NULL" if column.is_nullable else "NOT NULL"
+                    print(f"    Column: {column.name} ({column.data_type}, {nullable})")
+    
     def update_profile(self, 
                      email: Optional[str] = None, 
                      full_name: Optional[str] = None,
