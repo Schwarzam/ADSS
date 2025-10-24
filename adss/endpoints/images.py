@@ -660,7 +660,7 @@ class StampImagesEndpoint:
         with open(final_path, "wb") as f:
             f.write(data)
 
-        return final_path
+        return data
 
 
 class TrilogyImagesEndpoint:
