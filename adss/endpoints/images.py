@@ -160,7 +160,7 @@ class ImagesEndpoint:
                 with open(output_path, 'wb') as f:
                     for chunk in resp.iter_content(8192):
                         f.write(chunk)
-                return output_path
+                return resp.read()
             return resp.read()
         except Exception as e:
             raise ResourceNotFoundError(f"Failed to download image file {file_id}: {e}")
@@ -769,7 +769,7 @@ class TrilogyImagesEndpoint:
             if output_path:
                 with open(output_path, 'wb') as f:
                     f.write(resp.read())
-                return output_path
+                return resp.read()
             return resp.read()
 
         except Exception as e:
