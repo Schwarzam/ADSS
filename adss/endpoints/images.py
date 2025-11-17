@@ -73,6 +73,8 @@ class ImagesEndpoint:
                    ra_max: Optional[float] = None,
                    dec_min: Optional[float] = None,
                    dec_max: Optional[float] = None,
+                   obsdate_min: Optional[str] = None,
+                   obsdate_max: Optional[str] = None,
                    **kwargs) -> List[Dict[str, Any]]:
         url = f"{self.base_url}/adss/v1/images/collections/{collection_id}/files"
         try:
@@ -91,7 +93,11 @@ class ImagesEndpoint:
             params.update({"ra": ra, "dec": dec, "radius": radius})
         if ra_min is not None and ra_max is not None and dec_min is not None and dec_max is not None:
             params.update({"ra_min": ra_min, "ra_max": ra_max, "dec_min": dec_min, "dec_max": dec_max})
-
+        if obsdate_min is not None:
+            params["obsdate_min"] = obsdate_min
+        if obsdate_max is not None:
+            params["obsdate_max"] = obsdate_max
+        print(obsdate_min)
         try:
             resp = self.auth_manager.request(
                 method="GET",

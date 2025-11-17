@@ -497,7 +497,9 @@ class ADSSClient:
     
     def list_files(self, collection_id: int, skip: int = 0, limit: int = 100, 
                         filter_name: Optional[str] = None, filter_str: Optional[str] = None,
-                        object_name: Optional[str] = None, **kwargs) -> List[Dict[str, Any]]:
+                        object_name: Optional[str] = None,
+                        obsdate_min: Optional[str] = None,
+                        obsdate_max: Optional[str] = None, **kwargs) -> List[Dict[str, Any]]:
         """
         List image files in a collection with optional filtering.
         
@@ -508,12 +510,15 @@ class ADSSClient:
             filter_name: Filter by specific filter name (e.g., 'r', 'g', 'i')
             filter_str: Filter filenames that contain this string
             object_name: Filter by object name
+            obsdate_min: Filter by minimum observation date (ISO format)
+            obsdate_max: Filter by maximum observation date (ISO format)
             **kwargs: Additional keyword arguments to pass to the request (e.g., verify=False)
             
         Returns:
             List of image file objects
         """
-        return self.images.list_files(collection_id, skip, limit, filter_name, filter_str, object_name, **kwargs)
+        return self.images.list_files(collection_id, skip, limit, filter_name, filter_str, 
+                                      object_name, obsdate_min=obsdate_min, obsdate_max=obsdate_max, **kwargs)
     
     def cone_search_images(self, collection_id: int, ra: float, dec: float, radius: float,
                          filter_name: Optional[str] = None, limit: int = 100, **kwargs) -> List[Dict[str, Any]]:
