@@ -97,7 +97,7 @@ class ImagesEndpoint:
             params["obsdate_min"] = obsdate_min
         if obsdate_max is not None:
             params["obsdate_max"] = obsdate_max
-        print(obsdate_min)
+
         try:
             resp = self.auth_manager.request(
                 method="GET",
@@ -151,25 +151,36 @@ class ImagesEndpoint:
             resp = self.auth_manager.download(
                 method="GET",
                 url=url,
-                stream=True,
+                stream=True,              # stream only when we might write to disk
                 auth_required=False,
                 **kwargs
             )
             handle_response_errors(resp)
 
-            cd = resp.headers.get('Content-Disposition', '')
-            filename = cd.split('filename=')[1].strip('"') if 'filename=' in cd else ''
+            cd = resp.headers.get("Content-Disposition", "")
+            filename = cd.split("filename=")[1].strip('"') if "filename=" in cd else ""
 
+            # If output_path is a directory, append filename
             if output_path and os.path.isdir(output_path):
                 output_path = os.path.join(output_path, filename)
+
             if output_path:
-                with open(output_path, 'wb') as f:
-                    for chunk in resp.iter_content(8192):
-                        f.write(chunk)
-                return resp.read()
-            return resp.read()
+                with open(output_path, "wb") as f:
+                    for chunk in resp.iter_content(chunk_size=8192):
+                        if chunk:
+                            f.write(chunk)
+                return output_path  # ✅ do NOT resp.read() after streaming
+
+            # No output_path -> return bytes (still streamed, but consumed once)
+            return b"".join(chunk for chunk in resp.iter_content(chunk_size=8192) if chunk)
+
         except Exception as e:
             raise ResourceNotFoundError(f"Failed to download image file {file_id}: {e}")
+
+        except Exception as e:
+            raise ResourceNotFoundError(
+                f"Failed to download image file {file_id}: {e}"
+            )
 
 
 class LuptonImagesEndpoint:
