@@ -28,3 +28,16 @@ where = ["."]
 # python -m build
 # twine check dist/*
 # twine upload dist/*
+
+[project.optional-dependencies]
+# dependências usadas para rodar testes
+test = [
+  "pytest>=7.0",
+]
+
+# dependências de desenvolvimento (linters / formatters / ferramentas CI)
+dev = [
+  "black",
+  "ruff",
+  "flake8"
+]
