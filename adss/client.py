@@ -206,7 +206,7 @@ class ADSSClient:
                       file: Optional[Union[str, BinaryIO, pd.DataFrame, "Table"]] = None,
                       table_name: Optional[str] = None,
                       timeout: Optional[int] = None,
-                      verbose: bool = False,
+                      verbose: bool = 1,
                       **kwargs) -> QueryResult:
         """
         Execute a query asynchronously and wait for the results.

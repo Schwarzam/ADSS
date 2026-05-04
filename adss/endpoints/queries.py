@@ -358,38 +358,37 @@ class QueriesEndpoint:
         except Exception as e:
             raise QueryExecutionError(f"Failed to cancel query: {str(e)}", query_id)
     
-    def wait_for_completion(self, 
-                           query_id: str, 
-                           timeout: Optional[int] = None, 
-                           poll_interval: int = 2,
-                           **kwargs) -> Query:
+    def wait_for_completion(
+        self,
+        query_id: str,
+        timeout: Optional[int] = None,
+        poll_interval: int = 2,
+        **kwargs
+    ) -> Query:
         """
         Wait for an asynchronous query to complete.
-        
-        Args:
-            query_id: ID of the query to wait for
-            timeout: Maximum time to wait in seconds (None for no timeout)
-            poll_interval: Time between status checks in seconds
-            **kwargs: Additional keyword arguments to pass to the request (e.g., verify=False)
-            
-        Returns:
-            Completed Query object
-            
-        Raises:
-            ResourceNotFoundError: If the query is not found
-            TimeoutError: If the query doesn't complete within the timeout
-            QueryExecutionError: If the query fails
         """
         start_time = time.time()
-        while True:
-            query = self.get_status(query_id, **kwargs)
-            if query.is_complete:
-                return query
-            
-            if timeout and (time.time() - start_time > timeout):
-                raise TimeoutError(f"Query did not complete within {timeout} seconds")
-            
-            time.sleep(poll_interval)
+
+        try:
+            while True:
+                query = self.get_status(query_id, **kwargs)
+
+                if query.is_complete:
+                    return query
+
+                if timeout is not None and (time.time() - start_time > timeout):
+                    raise TimeoutError(
+                        f"Query did not complete within {timeout} seconds"
+                    )
+
+                time.sleep(poll_interval)
+
+        except KeyboardInterrupt:
+            try:
+                self.cancel_query(query_id, **kwargs)
+            finally:
+                raise
     
     def execute_and_wait(self,
                         query: str,
@@ -397,7 +396,7 @@ class QueriesEndpoint:
                         file: Optional[Union[str, BinaryIO]] = None,
                         table_name: Optional[str] = None,
                         timeout: Optional[int] = None,
-                        verbose: bool = False,
+                        verbose: bool = 1,
                         poll_interval: int = 2,
                         **kwargs) -> QueryResult:
         """
@@ -420,12 +419,15 @@ class QueriesEndpoint:
             TimeoutError: If the query doesn't complete within the timeout
         """
         # Start async query
-        if verbose:
+        if verbose == 2:
             print('Starting asynchronous query...')
         query_obj = self.execute_async(query, mode, file, table_name, **kwargs)
         
-        # Wait for completion
         if verbose:
+            print(f"Check query status at: {self.base_url}/queries/{query_obj.id}")
+        
+        # Wait for completion
+        if verbose == 2:
             print(f'Waiting for query {query_obj.id} to complete...')
         completed_query = self.wait_for_completion(query_obj.id, timeout, poll_interval, **kwargs)
         
@@ -436,7 +438,7 @@ class QueriesEndpoint:
             )
         
         # Get results
-        if verbose:
+        if verbose == 2:
             print('Fetching results...')
         return self.get_results(completed_query.id, verbose, **kwargs)
     

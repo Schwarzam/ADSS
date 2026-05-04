@@ -108,13 +108,54 @@ class Query:
 @dataclass
 class QueryResult:
     """
-    Represents the result of a query, including the data and metadata.
+    BASICALLY A DataFrame, maybe we'll add some metadata later, but for now it's just a wrapper around the DataFrame with some convenience methods.
     """
     query: Query
     data: pd.DataFrame
     execution_time_ms: Optional[int] = None
     row_count: Optional[int] = None
     column_count: Optional[int] = None
+    
+    def __call__(self) -> pd.DataFrame:
+        """
+        Return the underlying dataframe when the object is called.
+
+        Example:
+            df = result()
+        """
+        return self.data
+
+    def __getattr__(self, name):
+        """
+        Forward unknown attributes/methods to the underlying dataframe.
+
+        Examples:
+            result.columns
+            result.iloc[:5]
+            result.query("mag < 18")
+            result.groupby("field")
+        """
+        return getattr(self.data, name)
+
+    def __getitem__(self, key):
+        """
+        Allow dataframe-like indexing.
+
+        Examples:
+            result["ra"]
+            result[["ra", "dec"]]
+            result[result["mag"] < 18]
+        """
+        return self.data[key]
+
+    def __len__(self):
+        return len(self.data)
+
+    def __iter__(self):
+        return iter(self.data)
+
+    def __repr__(self):
+        return repr(self.data)
     
     def to_csv(self, path: str, **kwargs) -> None:
         """Save the query result to a CSV file."""
