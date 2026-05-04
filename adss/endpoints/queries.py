@@ -7,10 +7,57 @@ from typing import Dict, List, Optional, Union, Any, BinaryIO, Tuple
 import io
 import pandas as pd
 
+from typing import Optional, Union, BinaryIO
+from io import BytesIO
+
+try:
+    from astropy.table import Table
+except ImportError:
+    Table = None
+
 from adss.exceptions import QueryExecutionError, ResourceNotFoundError
 from adss.utils import handle_response_errors, parquet_to_dataframe
 from adss.models.query import Query, QueryResult
 
+def _prepare_upload_file(self, file: Union[str, BinaryIO, pd.DataFrame, "Table"]):
+    """
+    Prepare file upload input.
+
+    Supports:
+    - file path as str
+    - file-like object
+    - pandas.DataFrame
+    - astropy.table.Table
+
+    Returns:
+        file_obj, close_file, filename
+    """
+    # Case 1: file path
+    if isinstance(file, str):
+        return open(file, "rb"), True, file.split("/")[-1]
+
+    # Case 2: pandas DataFrame
+    if isinstance(file, pd.DataFrame):
+        buffer = BytesIO()
+        file.to_parquet(buffer, index=False)
+        buffer.seek(0)
+        return buffer, True, "upload.parquet"
+
+    # Case 3: astropy Table
+    if Table is not None and isinstance(file, Table):
+        df = file.to_pandas()
+        buffer = BytesIO()
+        df.to_parquet(buffer, index=False)
+        buffer.seek(0)
+        return buffer, True, "upload.parquet"
+
+    # Case 4: file-like object
+    if hasattr(file, "read"):
+        return file, False, getattr(file, "name", "upload")
+
+    raise TypeError(
+        "file must be a path, file-like object, pandas.DataFrame, or astropy.table.Table"
+    )
 
 class QueriesEndpoint:
     """
@@ -31,52 +78,40 @@ class QueriesEndpoint:
     def execute_sync(self, 
                     query: str, 
                     mode: str = 'adql', 
-                    file: Optional[Union[str, BinaryIO]] = None,
+                    file: Optional[Union[str, BinaryIO, pd.DataFrame, "Table"]] = None,
                     table_name: Optional[str] = None,
                     **kwargs) -> QueryResult:
         """
         Execute a query synchronously and return the results.
-        
+
         Args:
             query: The query to execute (ADQL or SQL)
             mode: Query mode ('adql' or 'sql')
-            file: Optional file path or file-like object to upload as a temporary table
+            file: Optional file path, file-like object, pandas.DataFrame,
+                or astropy.table.Table to upload as a temporary table
             table_name: Name for the uploaded table (required if file is provided)
-            **kwargs: Additional keyword arguments to pass to the request (e.g., verify=False)
-            
+            **kwargs: Additional keyword arguments to pass to the request
+
         Returns:
             QueryResult object containing the query data and metadata
-            
-        Raises:
-            QueryExecutionError: If the query execution fails
         """
-        # Don't include content-type in headers as requests will set it for multipart/form-data
         data = {
             "query": query,
             "mode": mode
         }
-        
-        files = {}
-        
-        # Handle file upload if provided
-        if file:
+
+        if file is not None:
             if not table_name:
                 raise ValueError("table_name is required when uploading a file")
-            
-            # If file is a string, open the file
-            if isinstance(file, str):
-                file_obj = open(file, 'rb')
-                close_file = True
-            else:
-                file_obj = file
-                close_file = False
-            
+
+            file_obj, close_file, filename = self._prepare_upload_file(file)
+
             try:
                 files = {
-                    "file": file_obj
+                    "file": (filename, file_obj)
                 }
                 data["table_name"] = table_name
-                
+
                 response = self.auth_manager.request(
                     method="POST",
                     url="/adss/sync",
@@ -87,25 +122,23 @@ class QueriesEndpoint:
             finally:
                 if close_file:
                     file_obj.close()
+
         else:
-            # No file upload
             response = self.auth_manager.request(
                 method="POST",
                 url="/adss/sync",
                 data=data,
                 **kwargs
             )
-        
+
         try:
             handle_response_errors(response)
-            
-            # Extract metadata from headers
+
             execution_time = int(response.headers.get('X-Execution-Time-Ms', 0))
             row_count = int(response.headers.get('X-Row-Count', 0))
-            
-            # Create a minimal Query object for the QueryResult
+
             query_obj = Query(
-                id="sync_query",  # Synchronous queries don't have an ID
+                id="sync_query",
                 query_text=query,
                 status="completed",
                 created_at=pd.Timestamp.now(),
@@ -114,10 +147,9 @@ class QueriesEndpoint:
                 execution_time_ms=execution_time,
                 row_count=row_count
             )
-            
-            # Parse Parquet data
+
             df = parquet_to_dataframe(response.read())
-            
+
             return QueryResult(
                 query=query_obj,
                 data=df,
@@ -125,58 +157,50 @@ class QueriesEndpoint:
                 row_count=row_count,
                 column_count=len(df.columns) if not df.empty else 0
             )
-            
+
         except Exception as e:
-            raise QueryExecutionError(f"Synchronous query execution failed: {str(e)}", query)
-    
+            raise QueryExecutionError(
+                f"Synchronous query execution failed: {str(e)}",
+                query
+            )
+                
     def execute_async(self,
-                     query: str,
-                     mode: str = 'adql',
-                     file: Optional[Union[str, BinaryIO]] = None,
-                     table_name: Optional[str] = None,
-                     **kwargs) -> Query:
+                    query: str,
+                    mode: str = 'adql',
+                    file: Optional[Union[str, BinaryIO, pd.DataFrame, "Table"]] = None,
+                    table_name: Optional[str] = None,
+                    **kwargs) -> Query:
         """
         Start an asynchronous query execution.
-        
+
         Args:
             query: The query to execute (ADQL or SQL)
             mode: Query mode ('adql' or 'sql')
-            file: Optional file path or file-like object to upload as a temporary table
+            file: Optional file path, file-like object, pandas.DataFrame,
+                or astropy.table.Table to upload as a temporary table
             table_name: Name for the uploaded table (required if file is provided)
-            **kwargs: Additional keyword arguments to pass to the request (e.g., verify=False)
-            
+            **kwargs: Additional keyword arguments to pass to the request
+
         Returns:
             Query object with status information
-            
-        Raises:
-            QueryExecutionError: If starting the query fails
         """
         data = {
             "query": query,
             "mode": mode
         }
-        
-        files = {}
-        
-        # Handle file upload if provided
-        if file:
+
+        if file is not None:
             if not table_name:
                 raise ValueError("table_name is required when uploading a file")
-            
-            # If file is a string, open the file
-            if isinstance(file, str):
-                file_obj = open(file, 'rb')
-                close_file = True
-            else:
-                file_obj = file
-                close_file = False
-            
+
+            file_obj, close_file, filename = self._prepare_upload_file(file)
+
             try:
                 files = {
-                    "file": file_obj
+                    "file": (filename, file_obj)
                 }
                 data["table_name"] = table_name
-                
+
                 response = self.auth_manager.request(
                     method="POST",
                     url="/adss/async",
@@ -188,8 +212,8 @@ class QueriesEndpoint:
             finally:
                 if close_file:
                     file_obj.close()
+
         else:
-            # No file upload
             response = self.auth_manager.request(
                 method="POST",
                 url="/adss/async",
@@ -197,15 +221,18 @@ class QueriesEndpoint:
                 auth_required=True,
                 **kwargs
             )
-        
+
         try:
             handle_response_errors(response)
             job_data = response.json()
             return Query.from_dict(job_data)
-            
+
         except Exception as e:
-            raise QueryExecutionError(f"Failed to start asynchronous query: {str(e)}", query)
-    
+            raise QueryExecutionError(
+                f"Failed to start asynchronous query: {str(e)}",
+                query
+            )
+        
     def get_status(self, query_id: str, **kwargs) -> Query:
         """
         Get the status of an asynchronous query.
