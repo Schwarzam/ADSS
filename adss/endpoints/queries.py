@@ -19,45 +19,6 @@ from adss.exceptions import QueryExecutionError, ResourceNotFoundError
 from adss.utils import handle_response_errors, parquet_to_dataframe
 from adss.models.query import Query, QueryResult
 
-def _prepare_upload_file(self, file: Union[str, BinaryIO, pd.DataFrame, "Table"]):
-    """
-    Prepare file upload input.
-
-    Supports:
-    - file path as str
-    - file-like object
-    - pandas.DataFrame
-    - astropy.table.Table
-
-    Returns:
-        file_obj, close_file, filename
-    """
-    # Case 1: file path
-    if isinstance(file, str):
-        return open(file, "rb"), True, file.split("/")[-1]
-
-    # Case 2: pandas DataFrame
-    if isinstance(file, pd.DataFrame):
-        buffer = BytesIO()
-        file.to_parquet(buffer, index=False)
-        buffer.seek(0)
-        return buffer, True, "upload.parquet"
-
-    # Case 3: astropy Table
-    if Table is not None and isinstance(file, Table):
-        df = file.to_pandas()
-        buffer = BytesIO()
-        df.to_parquet(buffer, index=False)
-        buffer.seek(0)
-        return buffer, True, "upload.parquet"
-
-    # Case 4: file-like object
-    if hasattr(file, "read"):
-        return file, False, getattr(file, "name", "upload")
-
-    raise TypeError(
-        "file must be a path, file-like object, pandas.DataFrame, or astropy.table.Table"
-    )
 
 class QueriesEndpoint:
     """
@@ -75,6 +36,47 @@ class QueriesEndpoint:
         self.base_url = base_url.rstrip('/')
         self.auth_manager = auth_manager
     
+    def _prepare_upload_file(self, file: Union[str, BinaryIO, pd.DataFrame, "Table"]):
+        """
+        Prepare file upload input.
+
+        Supports:
+        - file path as str
+        - file-like object
+        - pandas.DataFrame
+        - astropy.table.Table
+
+        Returns:
+            file_obj, close_file, filename
+        """
+        # Case 1: file path
+        if isinstance(file, str):
+            return open(file, "rb"), True, file.split("/")[-1]
+
+        # Case 2: pandas DataFrame
+        if isinstance(file, pd.DataFrame):
+            buffer = BytesIO()
+            file.to_parquet(buffer, index=False)
+            buffer.seek(0)
+            return buffer, True, "upload.parquet"
+
+        # Case 3: astropy Table
+        if Table is not None and isinstance(file, Table):
+            df = file.to_pandas()
+            buffer = BytesIO()
+            df.to_parquet(buffer, index=False)
+            buffer.seek(0)
+            return buffer, True, "upload.parquet"
+
+        # Case 4: file-like object
+        if hasattr(file, "read"):
+            return file, False, getattr(file, "name", "upload")
+
+        raise TypeError(
+            "file must be a path, file-like object, pandas.DataFrame, or astropy.table.Table"
+        )
+
+
     def execute_sync(self, 
                     query: str, 
                     mode: str = 'adql', 

@@ -203,7 +203,7 @@ class ADSSClient:
     def query_and_wait(self,
                       query_text: str,
                       mode: str = 'adql',
-                      file: Optional[Union[str, BinaryIO]] = None,
+                      file: Optional[Union[str, BinaryIO, pd.DataFrame, "Table"]] = None,
                       table_name: Optional[str] = None,
                       timeout: Optional[int] = None,
                       verbose: bool = False,
@@ -214,7 +214,7 @@ class ADSSClient:
         Args:
             query_text: The query to execute (ADQL or SQL)
             mode: Query mode ('adql' or 'sql')
-            file: Optional file path or file-like object to upload as a temporary table
+            file: Optional file path, file-like object, pandas.DataFrame, or astropy.table.Table to upload as a temporary table
             table_name: Name for the uploaded table (required if file is provided)
             timeout: Maximum time to wait in seconds (None for no timeout)
             **kwargs: Additional keyword arguments to pass to the request (e.g., verify=False)
