@@ -378,6 +378,7 @@ class QueriesEndpoint:
                     return query
 
                 if timeout is not None and (time.time() - start_time > timeout):
+                    self.cancel_query(query_id, **kwargs)
                     raise TimeoutError(
                         f"Query did not complete within {timeout} seconds"
                     )
