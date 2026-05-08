@@ -71,6 +71,14 @@ class QueriesEndpoint:
         # Case 4: file-like object
         if hasattr(file, "read"):
             return file, False, getattr(file, "name", "upload")
+        
+        # Case 5: BytesIO or similar
+        if isinstance(file, BytesIO):
+            return file, False, ""
+        
+        if "bytes" in str(type(file)).lower():
+            # return a bytesIO object            return BytesIO(file), True, "upload"
+            return BytesIO(file), True, "upload"
 
         raise TypeError(
             "file must be a path, file-like object, pandas.DataFrame, or astropy.table.Table"
