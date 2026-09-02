@@ -7,8 +7,10 @@ from .users import UsersEndpoint
 from .metadata import MetadataEndpoint
 from .admin import AdminEndpoint
 from .images import ImagesEndpoint, LuptonImagesEndpoint, StampImagesEndpoint, TrilogyImagesEndpoint
+from .alerts import AlertsEndpoint
 
 __all__ = [
     'QueriesEndpoint', 'UsersEndpoint', 'MetadataEndpoint', 'AdminEndpoint',
-    'ImagesEndpoint', 'LuptonImagesEndpoint', 'StampImagesEndpoint', 'TrilogyImagesEndpoint'
+    'ImagesEndpoint', 'LuptonImagesEndpoint', 'StampImagesEndpoint', 'TrilogyImagesEndpoint',
+    'AlertsEndpoint'
 ]

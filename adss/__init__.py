@@ -15,6 +15,7 @@ from adss.exceptions import (
 from adss.models.user import User, Role
 from adss.models.query import Query, QueryResult
 from adss.models.metadata import Schema, Table, Column
+from adss.endpoints.alerts import AlertsEndpoint
 
 from adss.utils import (
     handle_response_errors, parse_datetime, parquet_to_dataframe
@@ -25,5 +26,6 @@ __all__ = [
     'ADSSClientError', 'AuthenticationError', 'PermissionDeniedError',
     'ResourceNotFoundError', 'QueryExecutionError',
     'User', 'Role', 'Query', 'QueryResult', 'Schema', 'Table', 'Column',
+    'AlertsEndpoint',
     'handle_response_errors', 'parse_datetime', 'parquet_to_dataframe'
 ]

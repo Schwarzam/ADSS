@@ -1,7 +1,7 @@
 """
 Main client class for the Astronomy TAP Client.
 """
-from typing import Optional, Dict, List, Union, BinaryIO, Any
+from typing import Optional, Dict, List, Union, BinaryIO, Any, Iterable, Iterator
 import pandas as pd
 import urllib.parse
 
@@ -11,6 +11,7 @@ from adss.endpoints.users import UsersEndpoint
 from adss.endpoints.metadata import MetadataEndpoint
 #from .endpoints.admin import AdminEndpoint
 from adss.endpoints.images import ImagesEndpoint, LuptonImagesEndpoint, StampImagesEndpoint, TrilogyImagesEndpoint
+from adss.endpoints.alerts import AlertsEndpoint
 from adss.models.user import User, Role, SchemaPermission, TablePermission
 from adss.models.query import Query, QueryResult
 from adss.models.metadata import Column, Table, Schema, DatabaseMetadata
@@ -59,6 +60,7 @@ class ADSSClient:
         self.lupton_images = LuptonImagesEndpoint(self.base_url, self.auth)
         self.stamp_images = StampImagesEndpoint(self.base_url, self.auth)
         self.trilogy_images = TrilogyImagesEndpoint(self.base_url, self.auth)
+        self.alerts = AlertsEndpoint(self.base_url, self.auth)
         
         if not username:
             username = input("Username: ").strip()
@@ -293,6 +295,51 @@ class ADSSClient:
             DatabaseMetadata object containing all accessible schema and table information
         """
         return self.metadata.get_database_metadata(**kwargs)
+
+    def get_alert_categories(self, **kwargs) -> List[Dict[str, Any]]:
+        """
+        Get registered alert categories.
+
+        Args:
+            **kwargs: Additional keyword arguments to pass to the request.
+
+        Returns:
+            List of category dictionaries returned by the API.
+        """
+        return self.alerts.get_categories(**kwargs)
+
+    def listen_alerts(
+        self,
+        categories: Union[str, Iterable[str]] = "all",
+        replay: Optional[str] = None,
+        limit: Optional[int] = None,
+        follow: bool = True,
+        include_control_events: bool = False,
+        **kwargs
+    ) -> Iterator[Dict[str, Any]]:
+        """
+        Listen to alerts over Server-Sent Events (SSE).
+
+        Args:
+            categories: Category name, comma-separated category names, "all",
+                "*", or an iterable of category names.
+            replay: Optional replay point, usually "earliest" or "latest".
+            limit: Optional maximum number of replayed alerts.
+            follow: Continue streaming live alerts after replay completes.
+            include_control_events: If True, also yield stream lifecycle events.
+            **kwargs: Additional keyword arguments to pass to the request.
+
+        Yields:
+            Alert dictionaries.
+        """
+        return self.alerts.listen(
+            categories=categories,
+            replay=replay,
+            limit=limit,
+            follow=follow,
+            include_control_events=include_control_events,
+            **kwargs
+        )
     
     def pretty_print_db_metadata(self, dbmeta: Optional[DatabaseMetadata] = None) -> None:
         """
